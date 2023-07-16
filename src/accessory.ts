@@ -102,16 +102,10 @@ class ESP8266SM2 implements AccessoryPlugin {
   async getSensorData() {
     this.log('Axios', this.ip);
 
-    const refineData = (data: string) => {
-    this.log('data: ', data);
-    this.log('parsed: ', JSON.parse(data));
-      return JSON.parse(data);
-    };
-
     try {
       const { data } = await axios.get(`http://${this.ip}`);
 
-      this.sensorData.humidity = refineData(data);
+      this.sensorData = JSON.parse(data);
     } catch (error) {
       this.log('error while refining data or getting:', error);
     }
