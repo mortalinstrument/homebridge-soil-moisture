@@ -4,8 +4,6 @@ import {
   API,
   CharacteristicEventTypes,
   CharacteristicGetCallback,
-  CharacteristicSetCallback,
-  CharacteristicValue,
   HAP,
   Logging,
   Service
@@ -41,7 +39,7 @@ let hap: HAP;
  */
 export = (api: API) => {
   hap = api.hap;
-  api.registerAccessory("homebridge-esp8266-soil-moisture-sensor", ESP8266SM2);
+  api.registerAccessory("homebridge-web-soil-moisture-sensor", ESP8266SM2);
 };
 
 class ESP8266SM2 implements AccessoryPlugin {
@@ -77,8 +75,8 @@ class ESP8266SM2 implements AccessoryPlugin {
     this.informationService = new hap.Service.AccessoryInformation()
       .setCharacteristic(hap.Characteristic.Manufacturer, "David Koller")
       .setCharacteristic(hap.Characteristic.Model, "Soil-Moisture-v2")
-      .setCharacteristic(hap.Characteristic.SerialNumber, "000000001");
-
+      .setCharacteristic(hap.Characteristic.SerialNumber, "420");
+      
     log.info("Switch finished initializing!");
   }
 
@@ -90,22 +88,6 @@ class ESP8266SM2 implements AccessoryPlugin {
     this.log("Identify!");
   }
 
-  async getSensorData() {
-    console.log('Axios', this.ip);
-
-    const refineData = (data: string) => {
-      return JSON.parse(data.replace(/&quot;/g, '"'));
-    };
-
-    try {
-      const { data } = await axios.get(`http://${this.ip}`);
-
-      this.sensorData = refineData(data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   /*
    * This method is called directly after creation of this instance.
    * It should return all services which should be added to the accessory.
@@ -115,6 +97,22 @@ class ESP8266SM2 implements AccessoryPlugin {
       this.informationService,
       this.humidityService
     ];
+  }
+
+  async getSensorData() {
+    this.log('Axios', this.ip);
+
+    const refineData = (data: string) => {
+      return JSON.parse(data);
+    };
+
+    try {
+      const { data } = await axios.get(`http://${this.ip}`);
+
+      this.sensorData = refineData(data);
+    } catch (error) {
+      this.log('error while refining data or getting:', error);
+    }
   }
 
 }
