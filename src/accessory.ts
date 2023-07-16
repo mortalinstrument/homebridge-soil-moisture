@@ -39,7 +39,7 @@ let hap: HAP;
  */
 export = (api: API) => {
   hap = api.hap;
-  api.registerAccessory("homebridge-web-soil-moisture-sensor", ESP8266SM2);
+  api.registerAccessory("homebridge-web-soil-moisture-sensor",'soil-sensor', ESP8266SM2);
 };
 
 class ESP8266SM2 implements AccessoryPlugin {
